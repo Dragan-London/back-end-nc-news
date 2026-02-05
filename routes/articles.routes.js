@@ -5,9 +5,6 @@ const handleInvalidMethod = (req, res, next) => {
   res.status(405).send({ msg: "Method not allowed" });
 };
 
-articlesRouter
-  .route("/")
-  .get(getArticles)
-  .all(handleInvalidMethod);
+articlesRouter.route("/").get(getArticles).all(handleInvalidMethod);
 
 module.exports = articlesRouter;

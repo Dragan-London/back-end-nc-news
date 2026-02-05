@@ -88,6 +88,32 @@ describe("GET /api/articles", () => {
   });
 });
 
+describe("GET /api/users", () => {
+  test("200: responds with an object containing an array of user objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.users).toBeInstanceOf(Array);
+        expect(body.users).toHaveLength(4);
+      });
+  });
+
+  test("200: each user object has username, name, and avatar_url properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.users.length).toBeGreaterThan(0);
+        body.users.forEach((user) => {
+          expect(user).toHaveProperty("username", expect.any(String));
+          expect(user).toHaveProperty("name", expect.any(String));
+          expect(user).toHaveProperty("avatar_url", expect.any(String));
+        });
+      });
+  });
+});
+
 describe("Invalid Methods", () => {
   test("405: POST /api/topics - Method not allowed", () => {
     return request(app)
@@ -102,6 +128,16 @@ describe("Invalid Methods", () => {
   test("405: DELETE /api/articles - Method not allowed", () => {
     return request(app)
       .delete("/api/articles")
+      .expect(405)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Method not allowed");
+      });
+  });
+
+  test("405: POST /api/users - Method not allowed", () => {
+    return request(app)
+      .post("/api/users")
+      .send({ username: "test", name: "Test User" })
       .expect(405)
       .then(({ body }) => {
         expect(body.msg).toBe("Method not allowed");
