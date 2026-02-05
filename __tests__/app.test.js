@@ -87,3 +87,35 @@ describe("GET /api/articles", () => {
       });
   });
 });
+
+describe("Invalid Methods", () => {
+  test("405: POST /api/topics - Method not allowed", () => {
+    return request(app)
+      .post("/api/topics")
+      .send({ slug: "new", description: "test" })
+      .expect(405)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Method not allowed");
+      });
+  });
+
+  test("405: DELETE /api/articles - Method not allowed", () => {
+    return request(app)
+      .delete("/api/articles")
+      .expect(405)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Method not allowed");
+      });
+  });
+});
+
+describe("Invalid Endpoint", () => {
+  test("404: Responds with a message when path is not found", () => {
+    return request(app)
+      .get("/api/invalid-path")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Path not found");
+      });
+  });
+});
