@@ -23,3 +23,25 @@ exports.fetchArticles = () => {
       return rows;
     });
 };
+
+exports.fetchArticlesById = (user_article_id) => {
+  return db
+    .query(
+      `
+    SELECT
+      articles.author,
+      articles.title,
+      articles.article_id,
+      articles.body,
+      articles.topic,
+      articles.created_at,
+      articles.votes,
+      articles.article_img_url
+      FROM articles
+      WHERE articles.article_id = $1;`,
+      [user_article_id],
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};

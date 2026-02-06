@@ -114,6 +114,55 @@ describe("GET /api/users", () => {
   });
 });
 
+describe("GET /api/articles/:article_id", () => {
+  test("200: user will get an article by its id containing author,title,article_id,body,topic,created_at,votes and article_img_url", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toBeInstanceOf(Object);
+        expect(body.article).toHaveProperty("author", expect.any(String));
+        expect(body.article).toHaveProperty("title", expect.any(String));
+        expect(body.article).toHaveProperty("article_id", 1);
+        expect(body.article).toHaveProperty("body", expect.any(String));
+        expect(body.article).toHaveProperty("topic", expect.any(String));
+        expect(body.article).toHaveProperty("created_at", expect.any(String));
+        expect(body.article).toHaveProperty("votes", expect.any(Number));
+        expect(body.article).toHaveProperty(
+          "article_img_url",
+          expect.any(String),
+        );
+      });
+  });
+
+  test("404: responds with error when article doesn't exist", () => {
+    return request(app)
+      .get("/api/articles/987")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article not found");
+      });
+  });
+
+  // test("400: responds with error when article_id is invalid", () => {
+  //   return request(app)
+  //     .get("/api/articles/not-a-number")
+  //     .expect(400)
+  //     .then(({ body }) => {
+  //       expect(body.msg).toBe("Bad request");
+  //     });
+  // });
+
+  test("405: Method not allowed for unsupported methods", () => {
+    return request(app)
+      .post("/api/articles/1")
+      .expect(405)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Method not allowed");
+      });
+  });
+});
+
 describe("Invalid Methods", () => {
   test("405: POST /api/topics - Method not allowed", () => {
     return request(app)
