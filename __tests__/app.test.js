@@ -319,6 +319,26 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: successfully deletes a comment and returns no content", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+
+  test("404: responds with error when comment doesn't exist", () => {
+    return request(app)
+      .delete("/api/comments/9999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Comment not found");
+      });
+  });
+});
+
 describe("Invalid Methods", () => {
   test("405: POST /api/topics - Method not allowed", () => {
     return request(app)
