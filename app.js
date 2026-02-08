@@ -3,7 +3,6 @@ const apiRouter = require("./routes/api.routes");
 const handleNotFound = require("./errors/not_found_error");
 const {
   handleCustomErrors,
-  handlePSQLErrors,
   handleServerErrors,
 } = require("./errors/generic_error_handeling");
 
@@ -18,7 +17,6 @@ app.use(handleNotFound);
 
 // Error handling middleware
 app.use(handleCustomErrors);
-app.use(handlePSQLErrors);
 app.use(handleServerErrors);
 
 module.exports = app;

@@ -163,6 +163,104 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: responds with an array of comments for the given article", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeInstanceOf(Array);
+        expect(body.comments.length).toBeGreaterThan(0);
+        body.comments.forEach((comment) => {
+          expect(comment).toHaveProperty("comment_id", expect.any(Number));
+          expect(comment).toHaveProperty("votes", expect.any(Number));
+          expect(comment).toHaveProperty("created_at", expect.any(String));
+          expect(comment).toHaveProperty("author", expect.any(String));
+          expect(comment).toHaveProperty("body", expect.any(String));
+          expect(comment).toHaveProperty("article_id", 1);
+        });
+      });
+  });
+
+  test("200: comments are sorted by created_at in descending order (most recent first)", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+
+  test("200: responds with empty array when article exists but has no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toEqual([]);
+      });
+  });
+
+  test("404: responds with error when article doesn't exist", () => {
+    return request(app)
+      .get("/api/articles/9999/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article not found");
+      });
+  });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: successfully posts a comment and returns the posted comment", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "This is a test comment",
+    };
+
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toHaveProperty("comment_id", expect.any(Number));
+        expect(body.comment).toHaveProperty("author", "butter_bridge");
+        expect(body.comment).toHaveProperty("body", "This is a test comment");
+        expect(body.comment).toHaveProperty("article_id", 1);
+        expect(body.comment).toHaveProperty("votes", expect.any(Number));
+        expect(body.comment).toHaveProperty("created_at", expect.any(String));
+      });
+  });
+
+  test("404: responds with error when article doesn't exist", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "This is a test comment",
+    };
+
+    return request(app)
+      .post("/api/articles/9999/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article not found");
+      });
+  });
+
+  test("400: responds with error when missing required fields", () => {
+    const newComment = {
+      username: "butter_bridge",
+    };
+
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+});
+
 describe("Invalid Methods", () => {
   test("405: POST /api/topics - Method not allowed", () => {
     return request(app)
