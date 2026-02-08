@@ -3,6 +3,7 @@ const {
   getArticleByIdService,
   getCommentsByArticleIdService,
   postCommentService,
+  patchArticleVotesService,
 } = require("../services/articles.service");
 
 exports.getArticles = (req, res, next) => {
@@ -43,6 +44,17 @@ exports.postComment = (req, res, next) => {
   postCommentService(article_id, username, body)
     .then((comment) => {
       res.status(201).send({ comment });
+    })
+    .catch(next);
+};
+
+exports.patchArticleVotes = (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+
+  patchArticleVotesService(article_id, inc_votes)
+    .then((article) => {
+      res.status(200).send({ article });
     })
     .catch(next);
 };

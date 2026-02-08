@@ -4,6 +4,7 @@ const {
   getArticleById,
   getCommentsByArticleId,
   postComment,
+  patchArticleVotes,
 } = require("../controllers/articles.controller");
 
 const handleInvalidMethod = (req, res, next) => {
@@ -15,6 +16,7 @@ articlesRouter.route("/").get(getArticles).all(handleInvalidMethod);
 articlesRouter
   .route("/:article_id")
   .get(getArticleById)
+  .patch(patchArticleVotes)
   .all(handleInvalidMethod);
 
 articlesRouter

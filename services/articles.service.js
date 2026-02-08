@@ -3,6 +3,7 @@ const {
   fetchArticlesById,
   fetchCommentsByArticleId,
   insertComment,
+  updateArticleVotes,
 } = require("../models/articles.model");
 
 exports.getArticlesService = () => {
@@ -39,5 +40,18 @@ exports.postCommentService = (article_id, username, body) => {
       throw { status: 404, msg: "Article not found" };
     }
     return insertComment(article_id, username, body);
+  });
+};
+
+exports.patchArticleVotesService = (article_id, inc_votes) => {
+  if (inc_votes === undefined) {
+    throw { status: 400, msg: "Bad request" };
+  }
+
+  return updateArticleVotes(article_id, inc_votes).then((article) => {
+    if (!article) {
+      throw { status: 404, msg: "Article not found" };
+    }
+    return article;
   });
 };

@@ -261,6 +261,64 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
+describe("PATCH /api/articles/:article_id", () => {
+  test("200: successfully updates article votes and returns updated article", () => {
+    const voteUpdate = { inc_votes: 1 };
+
+    return request(app)
+      .patch("/api/articles/1")
+      .send(voteUpdate)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toHaveProperty("article_id", 1);
+        expect(body.article).toHaveProperty("votes", 101);
+        expect(body.article).toHaveProperty("title", expect.any(String));
+        expect(body.article).toHaveProperty("author", expect.any(String));
+        expect(body.article).toHaveProperty("body", expect.any(String));
+        expect(body.article).toHaveProperty("topic", expect.any(String));
+        expect(body.article).toHaveProperty("created_at", expect.any(String));
+        expect(body.article).toHaveProperty(
+          "article_img_url",
+          expect.any(String),
+        );
+      });
+  });
+
+  test("200: successfully decrements article votes", () => {
+    const voteUpdate = { inc_votes: -10 };
+
+    return request(app)
+      .patch("/api/articles/1")
+      .send(voteUpdate)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article.votes).toBe(90);
+      });
+  });
+
+  test("404: responds with error when article doesn't exist", () => {
+    const voteUpdate = { inc_votes: 1 };
+
+    return request(app)
+      .patch("/api/articles/9999")
+      .send(voteUpdate)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article not found");
+      });
+  });
+
+  test("400: responds with error when inc_votes is missing", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+});
+
 describe("Invalid Methods", () => {
   test("405: POST /api/topics - Method not allowed", () => {
     return request(app)
