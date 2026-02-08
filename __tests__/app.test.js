@@ -86,6 +86,54 @@ describe("GET /api/articles", () => {
         });
       });
   });
+
+  test("200: accepts sort_by query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("votes", { descending: true });
+      });
+  });
+
+  test("200: accepts order query", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at", { ascending: true });
+      });
+  });
+
+  test("400: responds with error for invalid sort_by column", () => {
+    return request(app)
+      .get("/api/articles?sort_by=invalid_column")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  test("200: filters articles by topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBeGreaterThan(0);
+        body.articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+
+  test("404: responds with error for topic that does not exist", () => {
+    return request(app)
+      .get("/api/articles?topic=not_a_topic")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
 });
 
 describe("GET /api/users", () => {

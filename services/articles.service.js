@@ -6,7 +6,9 @@ const {
   updateArticleVotes,
 } = require("../models/articles.model");
 
-exports.getArticlesService = () => {
+const { checkTopicExists } = require("../models/topics.model");
+
+exports.getArticlesService = (topic, sort_by, order) => {
   // this is where business logic would go, e.g.
   // filtering
   // permissions
@@ -14,7 +16,13 @@ exports.getArticlesService = () => {
   // validation
   // "business logic" = "stuff my app cares about"
 
-  return fetchArticles();
+  if (topic) {
+    return checkTopicExists(topic).then(() => {
+      return fetchArticles(topic, sort_by, order);
+    });
+  }
+
+  return fetchArticles(topic, sort_by, order);
 };
 
 exports.getArticleByIdService = (user_article_id) => {
