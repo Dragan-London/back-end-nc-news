@@ -105,6 +105,15 @@ describe("GET /api/articles", () => {
       });
   });
 
+  test("Sort_by and Order_by. 200: accepts both sort_by and order queries together", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("title", { ascending: true });
+      });
+  });
+
   test("400: responds with error for invalid sort_by column", () => {
     return request(app)
       .get("/api/articles?sort_by=invalid_column")
@@ -132,6 +141,24 @@ describe("GET /api/articles", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Not found");
+      });
+  });
+
+  test("200: returns empty array for valid topic with no articles", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toEqual([]);
+      });
+  });
+
+  test("400: responds with error for invalid order value", () => {
+    return request(app)
+      .get("/api/articles?order=invalid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
       });
   });
 });
@@ -204,14 +231,14 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
 
-  // test("400: responds with error when article_id is invalid", () => {
-  //   return request(app)
-  //     .get("/api/articles/not-a-number")
-  //     .expect(400)
-  //     .then(({ body }) => {
-  //       expect(body.msg).toBe("Bad request");
-  //     });
-  // });
+  test("400: responds with error when article_id is invalid", () => {
+    return request(app)
+      .get("/api/articles/not-a-number")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
 
   test("405: Method not allowed for unsupported methods", () => {
     return request(app)
@@ -268,6 +295,15 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Article not found");
       });
   });
+
+  test("400: responds with error when article_id is invalid", () => {
+    return request(app)
+      .get("/api/articles/not-a-number/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
 });
 
 describe("POST /api/articles/:article_id/comments", () => {
@@ -314,6 +350,26 @@ describe("POST /api/articles/:article_id/comments", () => {
     return request(app)
       .post("/api/articles/1/comments")
       .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  test("404: responds with error when username doesn't exist", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ username: "non_existent_user", body: "test" })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+
+  test("400: responds with error when article_id is invalid", () => {
+    return request(app)
+      .post("/api/articles/not-a-number/comments")
+      .send({ username: "butter_bridge", body: "test" })
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
@@ -377,6 +433,26 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
+
+  test("400: responds with error when inc_votes is not a number", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "not-a-number" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  test("400: responds with error when article_id is invalid", () => {
+    return request(app)
+      .patch("/api/articles/not-a-number")
+      .send({ inc_votes: 1 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
 });
 
 describe("DELETE /api/comments/:comment_id", () => {
@@ -395,6 +471,15 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Comment not found");
+      });
+  });
+
+  test("400: responds with error when comment_id is invalid", () => {
+    return request(app)
+      .delete("/api/comments/not-a-number")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
       });
   });
 });
