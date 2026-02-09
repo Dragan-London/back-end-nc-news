@@ -183,6 +183,18 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
 
+  test("comment_count 200: article response includes comment_count", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toHaveProperty(
+          "comment_count",
+          expect.any(Number),
+        );
+      });
+  });
+
   test("404: responds with error when article doesn't exist", () => {
     return request(app)
       .get("/api/articles/987")
