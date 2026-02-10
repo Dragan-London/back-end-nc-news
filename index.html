@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>NC News API</title>
+  </head>
+  <body>
+    <header>
+      <h1>NC News API</h1>
+      <p>
+        The NC News API provides endpoints to access, filter, and manage news
+        articles, topics, users, and comments. It supports sorting, ordering,
+        and topic filtering, and is designed for both development and production
+        use.
+      </p>
+    </header>
+    <main>
+      <h2>Available Endpoints:</h2>
+      <ul>
+        <li class="endpoint-card">
+          <h3>GET /api/topics</h3>
+          <p>Retrieve a list of all topics.</p>
+          <h4>Example response:</h4>
+          <pre>
+            <code>
+{
+  "topics":
+  [
+    {
+      "slug": "coding",
+      "description": "Code is love, code is life"
+    },
+    {
+      "slug": "football",
+      "description": "FOOTIE!"
+    },
+    {
+      "slug": "cooking",
+      "description": "Hey good looking, what you got cooking?"
+    }
+  ]
+}
+            </code>
+          </pre>
+        </li>
+        <li class="endpoint-card">
+          <h3>GET /api/articles</h3>
+          <p>
+            Retrieve all articles. Supports sorting, ordering, and filtering by
+            topic.
+          </p>
+          <h4>Query Parameters (optional):</h4>
+          <ul>
+            <li>
+              <code>sort_by</code> - Sort by any valid column (e.g., created_at,
+              votes, title). Default: created_at
+            </li>
+            <li><code>order</code> - asc or desc. Default: desc</li>
+            <li><code>topic</code> - Filter articles by topic slug</li>
+          </ul>
+          <h4>Example response:</h4>
+          <pre>
+            <code>
+{
+  "articles": [
+    {
+      "article_id": 1,
+      "title": "Living in the shadow of a great man",
+      "topic": "mitch",
+      "author": "butter_bridge",
+      "created_at": "2020-07-09T20:11:00.000Z",
+      "votes": 100,
+      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      "comment_count": 11
+    }
+  ]
+}
+            </code>
+          </pre>
+        </li>
+        <li class="endpoint-card">
+          <h3>GET /api/articles/:article_id</h3>
+          <p>Retrieve a single article by its ID.</p>
+          <h4>Example response:</h4>
+          <pre>
+            <code>
+{
+  "article": {
+    "article_id": 1,
+    "title": "Living in the shadow of a great man",
+    "topic": "mitch",
+    "author": "butter_bridge",
+    "body": "I find this existence challenging",
+    "created_at": "2020-07-09T20:11:00.000Z",
+    "votes": 100,
+    "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+  }
+}
+            </code>
+          </pre>
+        </li>
+        <li class="endpoint-card">
+          <h3>GET /api/articles/:article_id/comments</h3>
+          <p>Retrieve all comments for a specific article.</p>
+          <h4>Example response:</h4>
+          <pre>
+            <code>
+{
+  "comments": [
+    {
+      "comment_id": 5,
+      "body": "I hate streaming noses",
+      "article_id": 1,
+      "author": "icellusedkars",
+      "votes": 0,
+      "created_at": "2020-11-03T21:00:00.000Z"
+    }
+  ]
+}
+            </code>
+          </pre>
+        </li>
+        <li class="endpoint-card">
+          <h3>POST /api/articles/:article_id/comments</h3>
+          <p>Add a new comment to an article.</p>
+          <h4>Request body:</h4>
+          <pre>
+            <code>
+{
+  "username": "butter_bridge",
+  "body": "This is a test comment"
+}
+            </code>
+          </pre>
+          <h4>Example response:</h4>
+          <pre>
+            <code>
+{
+  "comment": {
+    "comment_id": 19,
+    "body": "This is a test comment",
+    "article_id": 1,
+    "author": "butter_bridge",
+    "votes": 0,
+    "created_at": "2024-01-10T12:00:00.000Z"
+  }
+}
+            </code>
+          </pre>
+        </li>
+        <li class="endpoint-card">
+          <h3>PATCH /api/articles/:article_id</h3>
+          <p>Update the vote count for an article.</p>
+          <h4>Request body:</h4>
+          <pre>
+            <code>
+{
+  "inc_votes": 1
+}
+            </code>
+          </pre>
+          <h4>Example response:</h4>
+          <pre>
+            <code>
+{
+  "article": {
+    "article_id": 1,
+    "title": "Living in the shadow of a great man",
+    "topic": "mitch",
+    "author": "butter_bridge",
+    "body": "I find this existence challenging",
+    "created_at": "2020-07-09T20:11:00.000Z",
+    "votes": 101,
+    "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+  }
+}
+            </code>
+          </pre>
+        </li>
+        <li class="endpoint-card">
+          <h3>DELETE /api/comments/:comment_id</h3>
+          <p>Delete a comment by its ID. Returns no content on success.</p>
+          <h4>Example response:</h4>
+          <pre>
+            <code>
+Status: 204 No Content
+            </code>
+          </pre>
+        </li>
+        <li class="endpoint-card">
+          <h3>GET /api/users</h3>
+          <p>Retrieve a list of all users.</p>
+          <h4>Example response:</h4>
+          <pre>
+            <code>
+{
+  "users": [
+    {
+      "username": "butter_bridge",
+      "name": "jonny",
+      "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+    }
+  ]
+}
+            </code>
+          </pre>
+        </li>
+      </ul>
+    </main>
+  </body>
+</html>

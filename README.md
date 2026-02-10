@@ -1,5 +1,7 @@
 # NC News Seeding
 
+Live deployment: https://nc-news-764k.onrender.com/
+
 Instructions for this sprint can be found at https://l2c.northcoders.com/courses/be/seeding-nc-news
 
 ## Environment Setup
