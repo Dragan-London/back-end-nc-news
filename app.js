@@ -1,12 +1,15 @@
 const express = require("express");
 const apiRouter = require("./routes/api.routes");
 const handleNotFound = require("./errors/not_found_error");
+const cors = require("cors");
 const {
   handleCustomErrors,
   handleServerErrors,
 } = require("./errors/generic_error_handeling");
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
